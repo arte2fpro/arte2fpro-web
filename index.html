@@ -2,35 +2,31 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
-        .controles { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 999; }
-        button { padding: 15px 10px; border-radius: 8px; border: none; background: #007bff; color: white; font-weight: bold; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .controles { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 999; }
+        button { padding: 12px 10px; border-radius: 8px; border: 2px solid white; background: #007bff; color: white; font-weight: bold; font-size: 13px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
 
     <div class="controles">
-        <button onclick="paso1()">1. Hola</button>
-        <button onclick="paso2()">2. Logo</button>
-        <button onclick="paso3()">3. Soy Arte2F</button>
-        <button onclick="paso4()">4. Bailar</button>
+        <button onclick="p1()">1. Hola</button>
+        <button onclick="p2()">2. Logo</button>
+        <button onclick="p3()">3. Soy Arte2F</button>
+        <button onclick="p4()">4. Bailar!</button>
     </div>
 
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" renderer="colorManagement: true;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
         <a-assets>
-            <a-asset-item id="avatarGlb" src="avatar.glb"></a-asset-item>
+            <a-asset-item id="avatarModel" src="avatar.glb"></a-asset-item>
             <img id="logoImg" src="logo2fpro.png">
             <audio id="musica" src="arte2fpromusic.mpeg" preload="auto"></audio>
         </a-assets>
 
-        <a-light type="ambient" intensity="1.8"></a-light>
-        <a-light type="directional" position="1 2 1"></a-light>
-
-        <a-entity id="entidadAvatar" gltf-model="#avatarGlb" position="0 -1.2 -3" rotation="0 180 0" scale="0.4 0.4 0.4" animation="">
-            <a-image id="entidadLogo" src="#logoImg" position="0.3 1.5 0.2" scale="0 0 0" visible="false" rotation="0 180 0"></a-image>
+        <a-entity id="entidadAvatar" gltf-model="#avatarModel" position="0 -1.5 -4" rotation="0 180 0" scale="0.4 0.4 0.4">
+            <a-image id="entidadLogo" src="#logoImg" position="0.5 2 0.5" scale="0 0 0" visible="false"></a-image>
         </a-entity>
         
         <a-marker-camera preset="hiro"></a-marker-camera>
@@ -41,51 +37,39 @@
         const lg = document.querySelector('#entidadLogo');
         const ms = document.querySelector('#musica');
 
-        function paso1() {
+        function p1() {
             const s = new SpeechSynthesisUtterance("Hola");
             s.lang = 'es-ES';
             window.speechSynthesis.speak(s);
-            // Forzamos rotación visual
-            av.setAttribute('animation', {
-                property: 'rotation',
-                to: '0 160 0',
-                dur: 800,
-                easing: 'easeOutQuad'
-            });
+            // El avatar entero se inclina hacia adelante para saludar
+            av.setAttribute('animation', "property: rotation; to: 15 180 0; dur: 500; dir: alternate; iterations: 2");
         }
 
-        function paso2() {
+        function p2() {
             lg.setAttribute('visible', 'true');
-            lg.setAttribute('animation', "property: scale; to: 1.2 1.2 1.2; dur: 600");
-            lg.setAttribute('animation__pos', "property: position; to: 0 2.2 1.2; dur: 800");
+            lg.setAttribute('animation', "property: scale; to: 1.5 1.5 1.5; dur: 600");
+            lg.setAttribute('animation__2', "property: position; to: 0 2.5 1.5; dur: 800");
         }
 
-        function paso3() {
+        function p3() {
             const s = new SpeechSynthesisUtterance("Hola, soy arte dos efe pro");
             s.lang = 'es-ES';
             window.speechSynthesis.speak(s);
-            lg.setAttribute('animation__side', "property: position; to: 1.5 2.2 0.5; dur: 1000");
-            av.setAttribute('animation__turn', "property: rotation; to: 0 210 0; dur: 1000");
+            // El avatar gira a un lado y el logo se mueve
+            av.setAttribute('animation__3', "property: rotation; to: 0 210 0; dur: 1000");
+            lg.setAttribute('animation__4', "property: position; to: 1.8 2.5 0.5; dur: 1000");
         }
 
-        function paso4() {
-            // Logo al bolsillo
-            lg.setAttribute('animation__back', "property: position; to: 0.3 1.5 0.2; dur: 600");
-            lg.setAttribute('animation__hide', "property: scale; to: 0 0 0; dur: 600");
-            
+        function p4() {
+            // Guardar logo
+            lg.setAttribute('animation__5', "property: scale; to: 0 0 0; dur: 500");
             setTimeout(() => {
                 lg.setAttribute('visible', 'false');
                 ms.play();
-                // Forzamos el baile (giro infinito)
-                av.setAttribute('animation__dance', {
-                    property: 'rotation',
-                    from: '0 180 0',
-                    to: '0 540 0',
-                    dur: 3000,
-                    loop: true,
-                    easing: 'linear'
-                });
-            }, 700);
+                // Baile: Giro completo y salto leve
+                av.setAttribute('animation__baile', "property: rotation; from: 0 0 0; to: 0 360 0; dur: 2000; loop: true; easing: linear");
+                av.setAttribute('animation__salto', "property: position; to: 0 -1.2 -4; dur: 500; dir: alternate; loop: true");
+            }, 600);
         }
     </script>
 </body>
