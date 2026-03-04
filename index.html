@@ -2,20 +2,29 @@
 <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 <script src="https://unpkg.com/aframe-vrm-component@1.0.0/dist/aframe-vrm-component.min.js"></script>
 
+<style>
+  a-scene { background-color: transparent !important; }
+  body { margin: 0; overflow: hidden; }
+</style>
+
 <body style="margin: 0; overflow: hidden;">
-  <div id="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: rgba(0,0,0,0.8); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Arial; cursor: pointer; text-align: center;">
+  <div id="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: rgba(0,0,0,0.85); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Arial; cursor: pointer; text-align: center;">
     <h1>ARTE 2F PRO</h1>
-    <p>Toca para iniciar</p>
+    <p>Toca para iniciar la experiencia</p>
   </div>
 
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" renderer="alpha: true; antialias: true; colorManagement: true;">
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" renderer="alpha: true; colorManagement: true;">
     <a-assets>
-      <img id="logoImg" src="logo2fpro.png">
+      <a-asset-item id="vrmModel" src="avatar.vrm" crossorigin="anonymous"></a-asset-item>
+      <img id="logoImg" src="logo2fpro.png" crossorigin="anonymous">
       <audio id="musicaFondo" src="arte2fpromusic.mpeg" preload="auto"></audio>
     </a-assets>
 
-    <a-entity id="avatar" vrm-model="src: avatar.vrm;" position="0 -1.0 -2" rotation="0 180 0" scale="1 1 1">
-      <a-image id="logoEntidad" src="#logoImg" position="0 0.8 0.4" scale="0 0 0" visible="false" rotation="0 180 0"></a-image>
+    <a-entity light="type: ambient; intensity: 1.5;"></a-entity>
+    <a-entity light="type: directional; intensity: 0.8;" position="1 1 1"></a-entity>
+
+    <a-entity id="avatar" vrm-model="src: #vrmModel;" position="0 -1.2 -2.5" rotation="0 180 0" visible="true">
+      <a-image id="logoEntidad" src="#logoImg" position="0 1.1 0.5" scale="0 0 0" visible="false" rotation="0 180 0"></a-image>
     </a-entity>
     
     <a-marker-camera preset="hiro"></a-marker-camera>
@@ -31,29 +40,29 @@
       overlay.style.display = 'none';
       window.speechSynthesis.cancel();
 
-      // 1. SALUDO INICIAL
+      // 1. SALUDO
       const h1 = new SpeechSynthesisUtterance("Hola");
       h1.lang = 'es-ES';
       window.speechSynthesis.speak(h1);
       avatar.setAttribute('animation', "property: rotation; to: 0 150 0; dur: 800");
 
-      // 2. MUESTRA LOGO AL DERECHO
+      // 2. LOGO
       setTimeout(() => {
         const h2 = new SpeechSynthesisUtterance("Soy arte dos efe pro");
         h2.lang = 'es-ES';
         window.speechSynthesis.speak(h2);
         logo.setAttribute('visible', 'true');
-        logo.setAttribute('animation', "property: scale; to: 0.5 0.5 0.5; dur: 600");
-        logo.setAttribute('animation__pos', "property: position; to: 0 0.9 0.6; dur: 600");
+        logo.setAttribute('animation', "property: scale; to: 0.6 0.6 0.6; dur: 600");
+        logo.setAttribute('animation__pos', "property: position; to: 0 1.2 0.7; dur: 600");
       }, 2000);
 
-      // 3. MUESTRA DE LADO
+      // 3. MOVIMIENTO
       setTimeout(() => {
         avatar.setAttribute('animation', "property: rotation; to: 0 210 0; dur: 1000");
-        logo.setAttribute('animation__side', "property: position; to: 0.4 0.9 0.4; dur: 1000");
+        logo.setAttribute('animation__side', "property: position; to: 0.5 1.2 0.5; dur: 1000");
       }, 4000);
 
-      // 4. BAILE Y MÚSICA FINAL
+      // 4. BAILE
       setTimeout(() => {
         logo.setAttribute('visible', 'false');
         musica.play();
