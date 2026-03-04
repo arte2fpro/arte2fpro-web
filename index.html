@@ -1,24 +1,28 @@
 <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
 <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-<script src="https://unpkg.com/aframe-vrm-component@1.0.0/dist/aframe-vrm-component.min.js"></script>
+
+<style>
+  a-scene { background-color: transparent !important; }
+  body { margin: 0; overflow: hidden; }
+</style>
 
 <body style="margin: 0; overflow: hidden;">
-  <div id="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: rgba(0,0,0,0.9); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Arial; cursor: pointer; text-align: center;">
-    <h1 style="font-size: 30px;">ARTE 2F PRO</h1>
-    <p>Toca la pantalla para CARGAR AVATAR</p>
+  <div id="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: rgba(0,0,0,0.85); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Arial; cursor: pointer; text-align: center;">
+    <h1>ARTE 2F PRO</h1>
+    <p>Toca para iniciar la experiencia</p>
   </div>
 
   <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" renderer="alpha: true; antialias: true; colorManagement: true;">
-    <a-assets timeout="10000">
-      <a-asset-item id="modeloVrm" src="avatar.vrm"></a-asset-item>
+    <a-assets>
+      <a-asset-item id="modelo" src="avatar.glb"></a-asset-item>
       <img id="logoImg" src="logo2fpro.png">
       <audio id="musicaFondo" src="arte2fpromusic.mpeg" preload="auto"></audio>
     </a-assets>
 
-    <a-entity light="type: ambient; intensity: 2;"></a-entity>
+    <a-entity light="type: ambient; intensity: 1.8;"></a-entity>
     <a-entity light="type: directional; intensity: 1;" position="1 2 1"></a-entity>
 
-    <a-entity id="avatar" vrm-model="src: #modeloVrm;" position="0 -1.0 -2.5" rotation="0 180 0" visible="true">
+    <a-entity id="avatar" gltf-model="#modelo" position="0 -1.0 -2.5" rotation="0 180 0" scale="1 1 1">
       <a-image id="logoEntidad" src="#logoImg" position="0 0.9 0.5" scale="0 0 0" visible="false" rotation="0 180 0"></a-image>
     </a-entity>
     
@@ -35,28 +39,28 @@
       overlay.style.display = 'none';
       window.speechSynthesis.cancel();
 
-      // 1. SALUDO
+      // Saludo
       const h1 = new SpeechSynthesisUtterance("Hola");
       h1.lang = 'es-ES';
       window.speechSynthesis.speak(h1);
       avatar.setAttribute('animation', "property: rotation; to: 0 150 0; dur: 800");
 
-      // 2. LOGO
+      // Presentación y Logo
       setTimeout(() => {
         const h2 = new SpeechSynthesisUtterance("Soy arte dos efe pro");
         h2.lang = 'es-ES';
         window.speechSynthesis.speak(h2);
         logo.setAttribute('visible', 'true');
         logo.setAttribute('animation', "property: scale; to: 0.6 0.6 0.6; dur: 600");
-        logo.setAttribute('animation__2', "property: position; to: 0 1.0 0.7; dur: 600");
+        logo.setAttribute('animation__pos', "property: position; to: 0 1.0 0.7; dur: 600");
       }, 2000);
 
-      // 3. BAILE
+      // Baile final
       setTimeout(() => {
         logo.setAttribute('visible', 'false');
         musica.play();
         avatar.setAttribute('animation', "property: rotation; from: 0 180 0; to: 0 540 0; dur: 3000; loop: true; easing: linear");
-      }, 6000);
+      }, 6500);
     });
   </script>
 </body>
