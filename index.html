@@ -2,20 +2,24 @@
 <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 <script src="https://unpkg.com/aframe-vrm-component@1.0.0/dist/aframe-vrm-component.min.js"></script>
 
+<style>
+  a-scene { background-color: transparent !important; }
+</style>
+
 <body style="margin: 0; overflow: hidden;">
-  <div id="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: rgba(0,0,0,0.8); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Arial; cursor: pointer;">
+  <div id="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: rgba(0,0,0,0.85); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Arial; cursor: pointer; text-align: center;">
     <h1>ARTE 2F PRO</h1>
-    <p>Toca la pantalla para comenzar</p>
+    <p>Toca para iniciar</p>
   </div>
 
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" renderer="logarithmicDepthBuffer: true; alpha: true;">
     <a-assets>
       <img id="logoImg" src="logo2fpro.png">
       <audio id="musicaFondo" src="arte2fpromusic.mpeg" preload="auto"></audio>
     </a-assets>
 
-    <a-entity id="avatar" vrm-model="src: avatar.vrm;" position="0 0 -3" rotation="0 180 0">
-      <a-image id="logoEntidad" src="#logoImg" position="0.3 -0.5 0.1" scale="0 0 0" visible="false"></a-image>
+    <a-entity id="avatar" vrm-model="src: avatar.vrm;" position="0 -1.7 -3" rotation="0 180 0">
+      <a-image id="logoEntidad" src="#logoImg" position="0 1.2 0.7" scale="0 0 0" visible="false" rotation="0 180 0"></a-image>
     </a-entity>
     
     <a-marker-camera preset="hiro"></a-marker-camera>
@@ -27,46 +31,45 @@
     const logo = document.querySelector('#logoEntidad');
     const musica = document.querySelector('#musicaFondo');
 
-    // Asegurarnos de que la música esté pausada al inicio
+    // Asegurar que la música esté en pausa al inicio
     musica.pause();
     musica.currentTime = 0;
 
     overlay.addEventListener('click', () => {
       overlay.style.display = 'none';
-      
-      // Reiniciar cualquier sonido por si acaso
       window.speechSynthesis.cancel();
 
-      // 1. SALUDO CON VOZ Y MOVIMIENTO (Inmediato)
-      const saludo = new SpeechSynthesisUtterance("Hola");
-      saludo.lang = 'es-ES';
-      saludo.rate = 0.9;
-      window.speechSynthesis.speak(saludo);
+      // 1. SALUDO Y HABLA
+      const h1 = new SpeechSynthesisUtterance("Hola");
+      h1.lang = 'es-ES';
+      h1.rate = 0.9;
+      window.speechSynthesis.speak(h1);
       
       // Movimiento de saludo
-      avatar.setAttribute('animation', "property: rotation; to: 0 150 0; dur: 1000");
+      avatar.setAttribute('animation', "property: rotation; to: 0 150 0; dur: 800");
 
-      // 2. SACA EL LOGO Y SE PRESENTA (A los 2 segundos)
+      // 2. MUESTRA LOGO AL FRENTE (Ajustada posición para el centro)
       setTimeout(() => {
-        const presentacion = new SpeechSynthesisUtterance("Soy arte dos efe pro");
-        presentacion.lang = 'es-ES';
-        window.speechSynthesis.speak(presentacion);
-        
+        const h2 = new SpeechSynthesisUtterance("Soy arte dos efe pro");
+        h2.lang = 'es-ES';
+        window.speechSynthesis.speak(h2);
         logo.setAttribute('visible', 'true');
-        logo.setAttribute('animation', "property: scale; to: 0.7 0.7 0.7; dur: 600");
+        
+        // Animaciones ajustadas para que no se vuele
+        logo.setAttribute('animation', "property: scale; to: 0.6 0.6 0.6; dur: 600");
         logo.setAttribute('animation__2', "property: position; to: 0 1.2 0.7; dur: 600");
       }, 2000);
 
-      // 3. PONE LA MANO DE LADO (A los 4 segundos)
+      // 3. MOVIMIENTO LATERAL
       setTimeout(() => {
-        avatar.setAttribute('animation', "property: rotation; to: 0 210 0; dur: 800");
-        logo.setAttribute('animation__3', "property: position; to: 0.6 1.2 0.3; dur: 800");
+        avatar.setAttribute('animation', "property: rotation; to: 0 220 0; dur: 1000");
+        logo.setAttribute('animation__3', "property: position; to: 0.5 1.2 0.5; dur: 1000");
       }, 4000);
 
-      // 4. GUARDA LOGO Y EMPIEZA MÚSICA/BAILE (A los 6 segundos)
+      // 4. BAILE Y MÚSICA
       setTimeout(() => {
         logo.setAttribute('visible', 'false');
-        musica.play(); // LA MÚSICA SOLO EMPIEZA AQUÍ
+        musica.play();
         avatar.setAttribute('animation', "property: rotation; from: 0 180 0; to: 0 540 0; dur: 3000; loop: true; easing: linear");
       }, 6500);
     });
