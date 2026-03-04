@@ -1,82 +1,78 @@
 <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
 <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
+<style>
+  .controls {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 10px; z-index: 100;
+  }
+  button {
+    padding: 12px; border-radius: 8px; border: none; background: #007bff;
+    color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  }
+  button:active { background: #0056b3; }
+</style>
+
 <body style="margin: 0; overflow: hidden;">
-  <div id="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: rgba(0,0,0,0.8); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Arial; cursor: pointer; text-align: center;">
-    <h1>ARTE 2F PRO</h1>
-    <p>Toca para iniciar</p>
+  <div class="controls">
+    <button onclick="saludar()">1. Hola</button>
+    <button onclick="mostrarLogo()">2. Logo</button>
+    <button onclick="presentar()">3. Soy Arte2F</button>
+    <button onclick="bailar()">4. Bailar!</button>
   </div>
 
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" renderer="alpha: true; antialias: true;">
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" renderer="alpha: true;">
     <a-assets>
       <a-asset-item id="modelo" src="avatar.glb"></a-asset-item>
       <img id="logoImg" src="logo2fpro.png">
-      <audio id="musicaFondo" src="arte2fpromusic.mpeg" preload="auto"></audio>
+      <audio id="musica" src="arte2fpromusic.mpeg"></audio>
     </a-assets>
 
     <a-light type="ambient" intensity="1.8"></a-light>
-    <a-light type="directional" position="1 2 1" intensity="1"></a-light>
-
+    
     <a-entity id="avatar" gltf-model="#modelo" position="0 -1.2 -3" rotation="0 180 0" scale="0.4 0.4 0.4">
-      <a-image id="logoEntidad" src="#logoImg" position="0.3 1.5 0.2" scale="0 0 0" visible="false" rotation="0 180 0"></a-image>
+      <a-image id="logo" src="#logoImg" position="0.3 1.5 0.2" scale="0 0 0" visible="false" rotation="0 180 0"></a-image>
     </a-entity>
     
     <a-marker-camera preset="hiro"></a-marker-camera>
   </a-scene>
 
   <script>
-    const overlay = document.getElementById('overlay');
     const avatar = document.querySelector('#avatar');
-    const logo = document.querySelector('#logoEntidad');
-    const musica = document.querySelector('#musicaFondo');
+    const logo = document.querySelector('#logo');
+    const musica = document.querySelector('#musica');
 
-    overlay.addEventListener('click', () => {
-      overlay.style.display = 'none';
-      window.speechSynthesis.cancel();
+    function saludar() {
+      const h = new SpeechSynthesisUtterance("Hola");
+      h.lang = 'es-ES';
+      window.speechSynthesis.speak(h);
+      avatar.setAttribute('animation', "property: rotation; to: 0 160 0; dur: 800");
+    }
 
-      // 1. HOLA
-      const h1 = new SpeechSynthesisUtterance("Hola");
-      h1.lang = 'es-ES';
-      window.speechSynthesis.speak(h1);
-      avatar.setAttribute('animation', "property: rotation; to: 0 160 0; dur: 1000");
+    function mostrarLogo() {
+      logo.setAttribute('visible', 'true');
+      logo.setAttribute('animation__s', "property: scale; to: 1.2 1.2 1.2; dur: 600");
+      logo.setAttribute('animation__m', "property: position; to: 0 2.2 1.2; dur: 800");
+    }
 
-      // 2. SACA LOGO DEL BOLSILLO
+    function presentar() {
+      const h = new SpeechSynthesisUtterance("Hola, soy arte dos efe pro");
+      h.lang = 'es-ES';
+      window.speechSynthesis.speak(h);
+      logo.setAttribute('animation__l', "property: position; to: 1.5 2.2 0.5; dur: 1000");
+      avatar.setAttribute('animation__r', "property: rotation; to: 0 200 0; dur: 1000");
+    }
+
+    function bailar() {
+      // Regresa al bolsillo primero
+      logo.setAttribute('animation__b', "property: position; to: 0.3 1.5 0.2; dur: 600");
+      logo.setAttribute('animation__h', "property: scale; to: 0 0 0; dur: 600");
+      
       setTimeout(() => {
-        logo.setAttribute('visible', 'true');
-        logo.setAttribute('animation', "property: scale; from: 0 0 0; to: 1 1 1; dur: 600");
-      }, 1500);
-
-      // 3. MUESTRA ADELANTE Y LUEGO AL LADO
-      setTimeout(() => {
-        logo.setAttribute('animation__adelante', "property: position; to: 0 2.2 1; dur: 800");
-      }, 2500);
-
-      // 4. "SOY ARTE 2F PRO" Y LUEGO AL BOLSILLO
-      setTimeout(() => {
-        const h2 = new SpeechSynthesisUtterance("Hola soy arte dos efe pro");
-        h2.lang = 'es-ES';
-        window.speechSynthesis.speak(h2);
-        
-        // Mueve al lado
-        logo.setAttribute('animation__lado', "property: position; to: 1.5 2.2 0.5; dur: 1000");
-        
-        // --- NUEVO MOVIMIENTO: REGRESO AL BOLSILLO ---
-        setTimeout(() => {
-          // El logo vuelve a la posición del bolsillo y se encoge
-          logo.setAttribute('animation__regreso', "property: position; to: 0.3 1.5 0.2; dur: 800");
-          logo.setAttribute('animation__cierre', "property: scale; to: 0 0 0; dur: 800");
-          
-          // --- ETAPA FINAL: BAILE ---
-          setTimeout(() => {
-            logo.setAttribute('visible', 'false');
-            musica.play();
-            // Inicia el baile giratorio
-            avatar.setAttribute('animation__baile', "property: rotation; from: 0 180 0; to: 0 540 0; dur: 3000; loop: true; easing: linear");
-          }, 900);
-          
-        }, 3500); // Tiempo para que termine de hablar antes de guardar el logo
-
-      }, 4500);
-    });
+        logo.setAttribute('visible', 'false');
+        musica.play();
+        avatar.setAttribute('animation__d', "property: rotation; from: 0 180 0; to: 0 540 0; dur: 3000; loop: true; easing: linear");
+      }, 700);
+    }
   </script>
 </body>
