@@ -1,29 +1,24 @@
 <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
 <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
-<style>
-  a-scene { background-color: transparent !important; }
-  body { margin: 0; overflow: hidden; }
-</style>
-
 <body style="margin: 0; overflow: hidden;">
   <div id="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: rgba(0,0,0,0.8); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Arial; cursor: pointer; text-align: center;">
     <h1>ARTE 2F PRO</h1>
-    <p>Toca para ver el avatar completo</p>
+    <p>Toca para iniciar</p>
   </div>
 
   <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" renderer="alpha: true; antialias: true;">
     <a-assets>
-      <a-asset-item id="modelo" src="avatar.glb?v=2"></a-asset-item>
-      <img id="logoImg" src="logo2fpro.png?v=2">
+      <a-asset-item id="modelo" src="avatar.glb"></a-asset-item>
+      <img id="logoImg" src="logo2fpro.png">
       <audio id="musicaFondo" src="arte2fpromusic.mpeg" preload="auto"></audio>
     </a-assets>
 
-    <a-entity light="type: ambient; intensity: 1.5;"></a-entity>
-    <a-entity light="type: directional; intensity: 1;" position="1 2 1"></a-entity>
+    <a-light type="ambient" intensity="1.8"></a-light>
+    <a-light type="directional" position="1 2 1" intensity="1"></a-light>
 
-    <a-entity id="avatar" gltf-model="#modelo" position="0 -1.2 -3" rotation="0 180 0" scale="0.05 0.05 0.05">
-      <a-image id="logoEntidad" src="#logoImg" position="0 25 0" scale="15 15 15" visible="false" rotation="0 180 0"></a-image>
+    <a-entity id="avatar" gltf-model="#modelo" position="0 -1.2 -3" rotation="0 180 0" scale="0.4 0.4 0.4">
+      <a-image id="logoEntidad" src="#logoImg" position="0.3 1.5 0.2" scale="0 0 0" visible="false" rotation="0 180 0"></a-image>
     </a-entity>
     
     <a-marker-camera preset="hiro"></a-marker-camera>
@@ -39,27 +34,49 @@
       overlay.style.display = 'none';
       window.speechSynthesis.cancel();
 
-      // Voz de saludo
+      // 1. HOLA
       const h1 = new SpeechSynthesisUtterance("Hola");
       h1.lang = 'es-ES';
       window.speechSynthesis.speak(h1);
-      
-      // El avatar gira para que lo veas bien
-      avatar.setAttribute('animation', "property: rotation; to: 0 540 0; dur: 2000");
+      avatar.setAttribute('animation', "property: rotation; to: 0 160 0; dur: 1000");
 
+      // 2. SACA LOGO DEL BOLSILLO
       setTimeout(() => {
-        const h2 = new SpeechSynthesisUtterance("Soy arte dos efe pro");
-        h2.lang = 'es-ES';
-        window.speechSynthesis.speak(h2);
         logo.setAttribute('visible', 'true');
-        logo.setAttribute('animation', "property: scale; from: 0 0 0; to: 15 15 15; dur: 1000");
+        logo.setAttribute('animation', "property: scale; from: 0 0 0; to: 1 1 1; dur: 600");
+      }, 1500);
+
+      // 3. MUESTRA ADELANTE Y LUEGO AL LADO
+      setTimeout(() => {
+        logo.setAttribute('animation__adelante', "property: position; to: 0 2.2 1; dur: 800");
       }, 2500);
 
+      // 4. "SOY ARTE 2F PRO" Y LUEGO AL BOLSILLO
       setTimeout(() => {
-        musica.play();
-        // Baile continuo
-        avatar.setAttribute('animation', "property: rotation; from: 0 180 0; to: 0 540 0; dur: 3000; loop: true; easing: linear");
-      }, 6000);
+        const h2 = new SpeechSynthesisUtterance("Hola soy arte dos efe pro");
+        h2.lang = 'es-ES';
+        window.speechSynthesis.speak(h2);
+        
+        // Mueve al lado
+        logo.setAttribute('animation__lado', "property: position; to: 1.5 2.2 0.5; dur: 1000");
+        
+        // --- NUEVO MOVIMIENTO: REGRESO AL BOLSILLO ---
+        setTimeout(() => {
+          // El logo vuelve a la posición del bolsillo y se encoge
+          logo.setAttribute('animation__regreso', "property: position; to: 0.3 1.5 0.2; dur: 800");
+          logo.setAttribute('animation__cierre', "property: scale; to: 0 0 0; dur: 800");
+          
+          // --- ETAPA FINAL: BAILE ---
+          setTimeout(() => {
+            logo.setAttribute('visible', 'false');
+            musica.play();
+            // Inicia el baile giratorio
+            avatar.setAttribute('animation__baile', "property: rotation; from: 0 180 0; to: 0 540 0; dur: 3000; loop: true; easing: linear");
+          }, 900);
+          
+        }, 3500); // Tiempo para que termine de hablar antes de guardar el logo
+
+      }, 4500);
     });
   </script>
 </body>
